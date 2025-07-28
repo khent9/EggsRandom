@@ -73,4 +73,4 @@ coroutine.wrap(function()
 	wait(3)
 
 	-- Your loadstring goes here:
-	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw"))()
+loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw"))()
