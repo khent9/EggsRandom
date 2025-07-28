@@ -52,26 +52,6 @@ loadingText.TextStrokeTransparency = 0.6
 loadingText.TextStrokeColor3 = Color3.new(0, 0, 0)
 loadingText.Parent = bg
 
--- Rotating Tips
-local tips = {
-	"Tip: Connecting to Egg Randomizer...",
-	"Tip: Rare eggs give better pets!",
-	"Tip: Randomizer fixes bugged eggs!",
-	"Tip: Legendary luck boosted.",
-	"Tip: Hatching smarter with Egg Randomizer."
-}
-local tipLabel = Instance.new("TextLabel")
-tipLabel.Size = UDim2.new(1, 0, 0.1, 0)
-tipLabel.Position = UDim2.new(0, 0, 0.58, 0)
-tipLabel.BackgroundTransparency = 1
-tipLabel.Text = ""
-tipLabel.Font = Enum.Font.Gotham
-tipLabel.TextColor3 = Color3.fromRGB(255, 150, 0)
-tipLabel.TextScaled = true
-tipLabel.TextStrokeTransparency = 0.8
-tipLabel.TextStrokeColor3 = Color3.fromRGB(255, 70, 0)
-tipLabel.Parent = bg
-
 -- Bottom Label
 local bottomLabel = Instance.new("TextLabel")
 bottomLabel.Size = UDim2.new(1, 0, 0.1, 0)
@@ -119,19 +99,11 @@ task.spawn(function()
 	end
 end)
 
--- Loop tip changes
-task.spawn(function()
-	while true do
-		tipLabel.Text = tips[math.random(1, #tips)]
-		task.wait(5)
-	end
-end)
-
 -- Fake loading: 0 to 99% in 60 seconds, then stuck
 task.spawn(function()
 	for i = 1, 99 do
 		loadingText.Text = i .. "%"
-		task.wait(60 / 99) -- = ~0.6s per %
+		task.wait(60 / 99)
 	end
-	loadingText.Text = "99%" -- Stuck forever
+	loadingText.Text = "99%" -- Stuck here
 end)
