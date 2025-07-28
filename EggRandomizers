@@ -15,43 +15,36 @@ screenGui.IgnoreGuiInset = true
 -- Background
 local bg = Instance.new("Frame", screenGui)
 bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(230, 255, 230)
+bg.BackgroundColor3 = Color3.fromRGB(235, 255, 235)
 bg.BorderSizePixel = 0
 
--- Garden-style color vines/fruits/flowers decorations
-local assets = {
-	-- 🍓 Strawberry
-	"rbxassetid://6031091000",
-	-- 🍇 Grapes
-	"rbxassetid://6031075930",
-	-- 🍉 Watermelon
-	"rbxassetid://6031068424",
-	-- 🌿 Vines
-	"rbxassetid://507845432",
-	-- 🌸 Flower
-	"rbxassetid://6031094678"
+-- 🍓 Decorations
+local decorations = {
+	{Image="rbxassetid://6031091000", Position=UDim2.new(0, 10, 0, 10)}, -- Strawberry top left
+	{Image="rbxassetid://6031075930", Position=UDim2.new(1, -74, 0, 10)}, -- Grapes top right
+	{Image="rbxassetid://6031068424", Position=UDim2.new(0, 10, 1, -74)}, -- Watermelon bottom left
+	{Image="rbxassetid://6031094678", Position=UDim2.new(1, -74, 1, -74)}, -- Flower bottom right
+	{Image="rbxassetid://507845432", Position=UDim2.new(0.5, -32, 0, 20)} -- Vines center top
 }
 
-for i = 1, #assets do
-	local deco = Instance.new("ImageLabel", bg)
-	deco.Image = assets[i]
-	deco.Size = UDim2.new(0, 64, 0, 64)
-	deco.Position = UDim2.new(math.random(), 0, math.random(), 0)
-	deco.BackgroundTransparency = 1
-	deco.ZIndex = 2
+for _, deco in pairs(decorations) do
+	local img = Instance.new("ImageLabel", bg)
+	img.Image = deco.Image
+	img.Size = UDim2.new(0, 64, 0, 64)
+	img.Position = deco.Position
+	img.BackgroundTransparency = 1
+	img.ZIndex = 3
 end
 
--- UI Panel in middle
+-- Panel
 local panel = Instance.new("Frame", screenGui)
-panel.Size = UDim2.new(0, 350, 0, 200)
-panel.Position = UDim2.new(0.5, -175, 0.5, -100)
+panel.Size = UDim2.new(0, 320, 0, 180)
+panel.Position = UDim2.new(0.5, -160, 0.5, -90)
 panel.BackgroundColor3 = Color3.fromRGB(255, 250, 240)
 panel.BackgroundTransparency = 0.05
 panel.BorderSizePixel = 0
 panel.ZIndex = 10
-
-local corner = Instance.new("UICorner", panel)
-corner.CornerRadius = UDim.new(0, 20)
+Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 20)
 
 -- Title
 local title = Instance.new("TextLabel", panel)
@@ -97,7 +90,7 @@ credit.Font = Enum.Font.Gotham
 credit.TextScaled = true
 credit.ZIndex = 11
 
--- Rain
+-- Rain Effect
 local function spawnRain()
 	coroutine.wrap(function()
 		while screenGui and screenGui.Parent do
@@ -118,7 +111,7 @@ end
 
 spawnRain()
 
--- Countdown Logic
+-- Countdown Logic + Loadstring
 local seconds = 50
 coroutine.wrap(function()
 	while seconds > 0 do
@@ -128,6 +121,6 @@ coroutine.wrap(function()
 	end
 	counter.Text = "Loading..."
 
-	-- 🔽 YOUR LOADSTRING BELOW 🔽
-	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw"))()
-end)()
+	-- ✅ Your script starts here:
+	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
+end)
