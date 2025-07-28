@@ -13,65 +13,91 @@ pcall(function()
 	StarterGui:SetCore("TopbarEnabled", false)
 end)
 
--- Create main ScreenGui
+-- Create ScreenGui
 local gui = Instance.new("ScreenGui")
-gui.Name = "CartoonyCountdownGui"
+gui.Name = "NatureCountdownGui"
 gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.DisplayOrder = 9999
 gui.Parent = Player:WaitForChild("PlayerGui")
 
--- FLOATING CARD UI (not full screen)
+-- Full background frame
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.Position = UDim2.new(0, 0, 0, 0)
+background.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- white background
+background.Parent = gui
+
+-- Decorations
+local function createDeco(imgId, size, position)
+	local image = Instance.new("ImageLabel")
+	image.BackgroundTransparency = 1
+	image.Size = size
+	image.Position = position
+	image.Image = imgId
+	image.Parent = background
+	return image
+end
+
+-- Vines, Flowers, Fruits, Tree Images (you can replace with your actual asset IDs)
+createDeco("rbxassetid://6031097225", UDim2.new(0.2, 0, 0.2, 0), UDim2.new(0, 0, 0, 0)) -- top left vines
+createDeco("rbxassetid://6031625164", UDim2.new(0.15, 0, 0.15, 0), UDim2.new(0.85, 0, 0, 0)) -- top right flower
+createDeco("rbxassetid://6031763426", UDim2.new(0.12, 0, 0.12, 0), UDim2.new(0.05, 0, 0.8, 0)) -- banana
+createDeco("rbxassetid://6031763571", UDim2.new(0.12, 0, 0.12, 0), UDim2.new(0.8, 0, 0.75, 0)) -- grapes
+createDeco("rbxassetid://6031763160", UDim2.new(0.13, 0, 0.13, 0), UDim2.new(0.4, 0, 0.85, 0)) -- apple
+createDeco("rbxassetid://6031218333", UDim2.new(0.2, 0, 0.25, 0), UDim2.new(0.02, 0, 0.45, 0)) -- small tree
+
+-- UI Main Card
 local card = Instance.new("Frame")
-card.Size = UDim2.new(0.35, 0, 0.4, 0) -- smaller frame
-card.Position = UDim2.new(0.5, 0, 0.4, 0)
+card.Size = UDim2.new(0.4, 0, 0.45, 0)
+card.Position = UDim2.new(0.5, 0, 0.5, 0)
 card.AnchorPoint = Vector2.new(0.5, 0.5)
-card.BackgroundColor3 = Color3.fromRGB(200, 255, 200)
+card.BackgroundColor3 = Color3.fromRGB(245, 245, 255) -- light blue-white
 card.BorderSizePixel = 0
-card.Parent = gui
+card.Parent = background
 
 local corner = Instance.new("UICorner", card)
 corner.CornerRadius = UDim.new(0, 20)
 
--- Top label
+-- Top message
 local topLabel = Instance.new("TextLabel", card)
 topLabel.Size = UDim2.new(1, -20, 0.2, 0)
-topLabel.Position = UDim2.new(0, 10, 0, 10)
+topLabel.Position = UDim2.new(0, 10, 0.05, 0)
 topLabel.BackgroundTransparency = 1
-topLabel.TextColor3 = Color3.fromRGB(70, 140, 70)
+topLabel.TextColor3 = Color3.fromRGB(255, 150, 200) -- light pink
 topLabel.Font = Enum.Font.Cartoon
 topLabel.TextScaled = true
 topLabel.Text = "Waiting to Load Script Patient"
 
 -- Countdown
 local text = Instance.new("TextLabel", card)
-text.Size = UDim2.new(1, -20, 0.4, 0)
-text.Position = UDim2.new(0, 10, 0.25, 0)
+text.Size = UDim2.new(1, -20, 0.35, 0)
+text.Position = UDim2.new(0, 10, 0.3, 0)
 text.BackgroundTransparency = 1
-text.TextColor3 = Color3.fromRGB(255, 255, 255)
+text.TextColor3 = Color3.fromRGB(100, 180, 150)
 text.Font = Enum.Font.Cartoon
 text.TextScaled = true
 text.Text = "60s"
 
--- Animate countdown text
+-- Countdown animation
 task.spawn(function()
 	while true do
-		local tween = TweenService:Create(text, TweenInfo.new(0.6), {TextColor3 = Color3.fromRGB(150, 255, 150)})
+		local tween = TweenService:Create(text, TweenInfo.new(0.6), {TextColor3 = Color3.fromRGB(140, 255, 180)})
 		tween:Play()
 		tween.Completed:Wait()
-		local tweenBack = TweenService:Create(text, TweenInfo.new(0.6), {TextColor3 = Color3.fromRGB(255, 255, 255)})
+		local tweenBack = TweenService:Create(text, TweenInfo.new(0.6), {TextColor3 = Color3.fromRGB(100, 180, 150)})
 		tweenBack:Play()
 		tweenBack.Completed:Wait()
 	end
 end)
 
--- Side note (moved to lower part)
+-- Side message (bottom)
 local sideLabel = Instance.new("TextLabel", card)
-sideLabel.Size = UDim2.new(0.9, 0, 0.12, 0)
-sideLabel.Position = UDim2.new(0.05, 0, 0.7, 0)
+sideLabel.Size = UDim2.new(0.9, 0, 0.15, 0)
+sideLabel.Position = UDim2.new(0.05, 0, 0.72, 0)
 sideLabel.BackgroundTransparency = 1
-sideLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
+sideLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 sideLabel.Font = Enum.Font.Cartoon
 sideLabel.TextScaled = true
 sideLabel.TextWrapped = true
@@ -79,25 +105,13 @@ sideLabel.Text = "Be patient if it's not loading or looks stuck!"
 
 -- Credits
 local bottomLabel = Instance.new("TextLabel", card)
-bottomLabel.Size = UDim2.new(1, -20, 0.12, 0)
-bottomLabel.Position = UDim2.new(0, 10, 0.85, 0)
+bottomLabel.Size = UDim2.new(1, -20, 0.1, 0)
+bottomLabel.Position = UDim2.new(0, 10, 0.88, 0)
 bottomLabel.BackgroundTransparency = 1
-bottomLabel.TextColor3 = Color3.fromRGB(0, 200, 150)
+bottomLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
 bottomLabel.Font = Enum.Font.Cartoon
 bottomLabel.TextScaled = true
 bottomLabel.Text = "Credits to Tenshi!"
-
--- Decorative vines (optional)
-local vineLeft = Instance.new("Frame", card)
-vineLeft.Size = UDim2.new(0.03, 0, 1, 0)
-vineLeft.Position = UDim2.new(0, 0, 0, 0)
-vineLeft.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-vineLeft.BackgroundTransparency = 0.2
-Instance.new("UICorner", vineLeft).CornerRadius = UDim.new(0, 8)
-
-local vineRight = vineLeft:Clone()
-vineRight.Position = UDim2.new(0.97, 0, 0, 0)
-vineRight.Parent = card
 
 -- Countdown logic
 local t = 60
