@@ -1,143 +1,145 @@
--- Fullscreen UI with countdown, decorations, rain, and final loadstring execution
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Create screen GUI
+-- Remove existing UI if any
+if playerGui:FindFirstChild("GardenLoadUI") then
+	playerGui:FindFirstChild("GardenLoadUI"):Destroy()
+end
+
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "GardenUI"
+screenGui.Name = "GardenLoadUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.Parent = playerGui
 
--- Background frame
+-- Background
 local bg = Instance.new("Frame")
-bg.BackgroundColor3 = Color3.fromRGB(240, 255, 240)
+bg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BorderSizePixel = 0
+bg.ZIndex = 0
 bg.Parent = screenGui
 
--- Decorative image helper
-local function createDecoration(imageId, pos, size)
-	local img = Instance.new("ImageLabel")
-	img.BackgroundTransparency = 1
-	img.Image = imageId
-	img.Size = size
-	img.Position = pos
-	img.Parent = bg
-	return img
-end
-
--- Decorations (fruits, vines, flowers)
+-- Decorations
 local decorations = {
-	{img = "rbxassetid://507865027", pos = UDim2.new(0, -20, 0, -20), size = UDim2.new(0, 120, 0, 120)}, -- Flower top-left
-	{img = "rbxassetid://507865268", pos = UDim2.new(1, -100, 0, 20), size = UDim2.new(0, 100, 0, 100)}, -- Vine top-right
-	{img = "rbxassetid://6031094677", pos = UDim2.new(0.5, -40, 1, -80), size = UDim2.new(0, 80, 0, 80)}, -- Apple bottom center
-	{img = "rbxassetid://6031097184", pos = UDim2.new(1, -100, 1, -100), size = UDim2.new(0, 80, 0, 80)}, -- Banana bottom right
-	{img = "rbxassetid://6031091002", pos = UDim2.new(0, 20, 1, -100), size = UDim2.new(0, 80, 0, 80)}, -- Orange bottom left
+	{img="rbxassetid://507845210", pos=UDim2.new(0, 10, 0, 10)},
+	{img="rbxassetid://507845159", pos=UDim2.new(1, -80, 0, 20)},
+	{img="rbxassetid://507845297", pos=UDim2.new(0, 20, 1, -100)},
+	{img="rbxassetid://507845432", pos=UDim2.new(0.5, -100, 0, 0)},
+	{img="rbxassetid://507845606", pos=UDim2.new(1, -90, 1, -90)}
 }
 
-for _, decor in ipairs(decorations) do
-	createDecoration(decor.img, decor.pos, decor.size)
+for _, item in pairs(decorations) do
+	local img = Instance.new("ImageLabel")
+	img.Image = item.img
+	img.Size = UDim2.new(0, 64, 0, 64)
+	img.Position = item.pos
+	img.BackgroundTransparency = 1
+	img.ZIndex = 1
+	img.Parent = bg
 end
 
--- Rain effect loop
-coroutine.wrap(function()
-	while true do
-		local rainDrop = Instance.new("Frame")
-		rainDrop.Size = UDim2.new(0, 2, 0, math.random(10, 30))
-		rainDrop.Position = UDim2.new(math.random(), 0, -0.1, 0)
-		rainDrop.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-		rainDrop.BorderSizePixel = 0
-		rainDrop.BackgroundTransparency = 0.3
-		rainDrop.Parent = bg
+-- UI Panel
+local panel = Instance.new("Frame")
+panel.AnchorPoint = Vector2.new(0.5, 1)
+panel.Position = UDim2.new(0.5, 0, 0.95, 0)
+panel.Size = UDim2.new(0, 320, 0, 160)
+panel.BackgroundColor3 = Color3.fromRGB(240, 245, 255)
+panel.BackgroundTransparency = 0.05
+panel.BorderSizePixel = 0
+panel.ZIndex = 2
+panel.Parent = screenGui
+panel.ClipsDescendants = true
+panel:TweenPosition(panel.Position, Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.4, true)
 
-		game:GetService("TweenService"):Create(rainDrop, TweenInfo.new(1.2), {
-			Position = UDim2.new(rainDrop.Position.X.Scale, 0, 1.2, 0),
-			BackgroundTransparency = 1
-		}):Play()
-
-		game.Debris:AddItem(rainDrop, 1.2)
-		wait(0.05)
-	end
-end)()
-
--- Center countdown box
-local frame = Instance.new("Frame")
-frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-frame.Size = UDim2.new(0, 300, 0, 120)
-frame.BackgroundColor3 = Color3.fromRGB(200, 230, 255)
-frame.BorderSizePixel = 0
-frame.BackgroundTransparency = 0.2
-frame.Parent = bg
-frame.ClipsDescendants = true
-frame.ZIndex = 2
-frame:TweenSize(UDim2.new(0, 320, 0, 140), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 1)
-
--- UI corner
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 20)
-corner.Parent = frame
+corner.Parent = panel
 
--- Countdown label
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0.1, 0)
+title.BackgroundTransparency = 1
+title.Text = "Waiting to Load Script Patiently"
+title.TextColor3 = Color3.fromRGB(255, 160, 190)
+title.Font = Enum.Font.FredokaOne
+title.TextScaled = true
+title.ZIndex = 3
+title.Parent = panel
+
+-- Countdown Label
 local counter = Instance.new("TextLabel")
-counter.Size = UDim2.new(1, 0, 1, 0)
+counter.Size = UDim2.new(1, 0, 0, 50)
+counter.Position = UDim2.new(0, 0, 0.35, 0)
 counter.BackgroundTransparency = 1
-counter.TextColor3 = Color3.fromRGB(0, 0, 0)
-counter.TextScaled = true
-counter.Font = Enum.Font.FredokaOne
 counter.Text = "50s"
-counter.Parent = frame
+counter.TextColor3 = Color3.fromRGB(100, 200, 150)
+counter.Font = Enum.Font.GothamBlack
+counter.TextScaled = true
+counter.ZIndex = 3
+counter.Parent = panel
 
--- Tip label
-local tip = Instance.new("TextLabel")
-tip.Size = UDim2.new(1, 0, 0, 30)
-tip.Position = UDim2.new(0, 0, 1, 10)
-tip.BackgroundTransparency = 1
-tip.TextColor3 = Color3.fromRGB(0, 0, 0)
-tip.Font = Enum.Font.GothamSemibold
-tip.TextScaled = true
-tip.Text = "Be patient if it's not loading!"
-tip.Parent = frame
+-- Subtext
+local subtext = Instance.new("TextLabel")
+subtext.Size = UDim2.new(1, 0, 0, 30)
+subtext.Position = UDim2.new(0, 0, 0.65, 0)
+subtext.BackgroundTransparency = 1
+subtext.Text = "Be patient if it's not loading or looks stuck!"
+subtext.TextColor3 = Color3.fromRGB(140, 140, 140)
+subtext.Font = Enum.Font.Gotham
+subtext.TextScaled = true
+subtext.ZIndex = 3
+subtext.Parent = panel
 
--- Credits label
+-- Credits
 local credit = Instance.new("TextLabel")
 credit.Size = UDim2.new(1, 0, 0, 25)
-credit.Position = UDim2.new(0, 0, 1, 40)
+credit.Position = UDim2.new(0, 0, 0.83, 0)
 credit.BackgroundTransparency = 1
-credit.TextColor3 = Color3.fromRGB(100, 100, 100)
+credit.Text = "Credits to Tenshi!"
+credit.TextColor3 = Color3.fromRGB(100, 180, 255)
 credit.Font = Enum.Font.Gotham
 credit.TextScaled = true
-credit.Text = "Credits to Tenshi!"
-credit.Parent = frame
+credit.ZIndex = 3
+credit.Parent = panel
+
+-- Rain Effect
+local function spawnRain()
+	coroutine.wrap(function()
+		while screenGui and screenGui.Parent do
+			local drop = Instance.new("Frame")
+			drop.Size = UDim2.new(0, 2, 0, math.random(10, 30))
+			drop.Position = UDim2.new(math.random(), 0, -0.1, 0)
+			drop.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+			drop.BorderSizePixel = 0
+			drop.ZIndex = 0
+			drop.Parent = screenGui
+
+			game:GetService("TweenService"):Create(drop, TweenInfo.new(1.5, Enum.EasingStyle.Linear), {
+				Position = UDim2.new(drop.Position.X.Scale, 0, 1.2, 0)
+			}):Play()
+
+			game:GetService("Debris"):AddItem(drop, 2)
+			wait(0.05)
+		end
+	end)()
+end
+
+spawnRain()
 
 -- Countdown Logic
 local seconds = 50
 coroutine.wrap(function()
 	while seconds > 0 do
-		counter.Text = tostring(seconds) .. "s"
-		wait(1)
+		counter.Text = seconds .. "s"
 		seconds -= 1
+		wait(1)
 	end
 	counter.Text = "Loading..."
-
-	wait(2)
-
-	-- Fade out
-	for i = 1, 20 do
-		bg.BackgroundTransparency = i / 20
-		frame.BackgroundTransparency = i / 20
-		for _, v in pairs(frame:GetChildren()) do
-			if v:IsA("TextLabel") then
-				v.TextTransparency = i / 20
-			end
-		end
-		wait(0.05)
-	end
-
-	screenGui:Destroy()
-
-	-- ✅ YOUR LOADSTRING GOES HERE
+	
+	-- ADD YOUR CUSTOM LOADSTRING SCRIPT HERE
 	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw"))()
 end)()
