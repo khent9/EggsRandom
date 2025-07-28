@@ -1,126 +1,76 @@
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "LoadingScreen"
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game.CoreGui
 
--- Cleanup
-if playerGui:FindFirstChild("GardenLoadUI") then
-	playerGui.GardenLoadUI:Destroy()
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(1, 0, 1, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(235, 255, 235)
+Frame.Parent = ScreenGui
+
+-- Decorations (fake vines/fruits/flowers using colored frames for now)
+for i = 1, 10 do
+	local deco = Instance.new("Frame")
+	deco.Size = UDim2.new(0, math.random(30,60), 0, math.random(30,60))
+	deco.Position = UDim2.new(math.random(), 0, math.random(), 0)
+	deco.BackgroundColor3 = Color3.fromRGB(math.random(200,255), math.random(100,200), math.random(100,200))
+	deco.BorderSizePixel = 0
+	deco.BackgroundTransparency = 0.3
+	deco.ZIndex = 1
+	deco.Parent = Frame
 end
 
-local screenGui = Instance.new("ScreenGui", playerGui)
-screenGui.Name = "GardenLoadUI"
-screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
+-- Countdown Text
+local CountLabel = Instance.new("TextLabel")
+CountLabel.Size = UDim2.new(0, 300, 0, 100)
+CountLabel.Position = UDim2.new(0.5, -150, 0.5, -50)
+CountLabel.BackgroundTransparency = 1
+CountLabel.Text = "60s"
+CountLabel.Font = Enum.Font.GothamBold
+CountLabel.TextColor3 = Color3.fromRGB(0, 128, 0)
+CountLabel.TextScaled = true
+CountLabel.Parent = Frame
 
--- Background
-local bg = Instance.new("Frame", screenGui)
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(235, 255, 235)
-bg.BorderSizePixel = 0
+-- Loading Text (below)
+local LoadingLabel = Instance.new("TextLabel")
+LoadingLabel.Size = UDim2.new(0, 300, 0, 50)
+LoadingLabel.Position = UDim2.new(0.5, -150, 0.5, 60)
+LoadingLabel.BackgroundTransparency = 1
+LoadingLabel.Text = ""
+LoadingLabel.Font = Enum.Font.Gotham
+LoadingLabel.TextColor3 = Color3.fromRGB(100, 100, 100)
+LoadingLabel.TextScaled = true
+LoadingLabel.Parent = Frame
 
--- 🍓 Decorations
-local decorations = {
-	{Image="rbxassetid://6031091000", Position=UDim2.new(0, 10, 0, 10)}, -- Strawberry top left
-	{Image="rbxassetid://6031075930", Position=UDim2.new(1, -74, 0, 10)}, -- Grapes top right
-	{Image="rbxassetid://6031068424", Position=UDim2.new(0, 10, 1, -74)}, -- Watermelon bottom left
-	{Image="rbxassetid://6031094678", Position=UDim2.new(1, -74, 1, -74)}, -- Flower bottom right
-	{Image="rbxassetid://507845432", Position=UDim2.new(0.5, -32, 0, 20)} -- Vines center top
-}
+-- Looping Rain
+spawn(function()
+	while true do
+		local drop = Instance.new("Frame")
+		drop.Size = UDim2.new(0, 2, 0, 10)
+		drop.Position = UDim2.new(math.random(), 0, 0, 0)
+		drop.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		drop.BorderSizePixel = 0
+		drop.Parent = Frame
+		game:GetService("TweenService"):Create(drop, TweenInfo.new(1), {Position = UDim2.new(drop.Position.X.Scale, 0, 1, 0)}):Play()
+		game.Debris:AddItem(drop, 1)
+		wait(0.05)
+	end
+end)
 
-for _, deco in pairs(decorations) do
-	local img = Instance.new("ImageLabel", bg)
-	img.Image = deco.Image
-	img.Size = UDim2.new(0, 64, 0, 64)
-	img.Position = deco.Position
-	img.BackgroundTransparency = 1
-	img.ZIndex = 3
-end
-
--- Panel
-local panel = Instance.new("Frame", screenGui)
-panel.Size = UDim2.new(0, 320, 0, 180)
-panel.Position = UDim2.new(0.5, -160, 0.5, -90)
-panel.BackgroundColor3 = Color3.fromRGB(255, 250, 240)
-panel.BackgroundTransparency = 0.05
-panel.BorderSizePixel = 0
-panel.ZIndex = 10
-Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 20)
-
--- Title
-local title = Instance.new("TextLabel", panel)
-title.Size = UDim2.new(1, 0, 0, 35)
-title.Position = UDim2.new(0, 0, 0, 10)
-title.Text = "Waiting to Load Script Patiently"
-title.TextColor3 = Color3.fromRGB(255, 120, 180)
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.FredokaOne
-title.TextScaled = true
-title.ZIndex = 11
-
--- Countdown
-local counter = Instance.new("TextLabel", panel)
-counter.Size = UDim2.new(1, 0, 0, 60)
-counter.Position = UDim2.new(0, 0, 0.35, 0)
-counter.Text = "50s"
-counter.TextColor3 = Color3.fromRGB(100, 200, 150)
-counter.BackgroundTransparency = 1
-counter.Font = Enum.Font.GothamBlack
-counter.TextScaled = true
-counter.ZIndex = 11
-
--- Subtext
-local subtext = Instance.new("TextLabel", panel)
-subtext.Size = UDim2.new(1, 0, 0, 30)
-subtext.Position = UDim2.new(0, 0, 0.7, 0)
-subtext.Text = "Be patient if it's not loading or looks stuck!"
-subtext.TextColor3 = Color3.fromRGB(120, 120, 120)
-subtext.BackgroundTransparency = 1
-subtext.Font = Enum.Font.Gotham
-subtext.TextScaled = true
-subtext.ZIndex = 11
-
--- Credit
-local credit = Instance.new("TextLabel", panel)
-credit.Size = UDim2.new(1, 0, 0, 25)
-credit.Position = UDim2.new(0, 0, 0.85, 0)
-credit.Text = "Credits to Tenshi!"
-credit.TextColor3 = Color3.fromRGB(100, 180, 255)
-credit.BackgroundTransparency = 1
-credit.Font = Enum.Font.Gotham
-credit.TextScaled = true
-credit.ZIndex = 11
-
--- Rain Effect
-local function spawnRain()
-	coroutine.wrap(function()
-		while screenGui and screenGui.Parent do
-			local drop = Instance.new("Frame", screenGui)
-			drop.Size = UDim2.new(0, 2, 0, math.random(10, 30))
-			drop.Position = UDim2.new(math.random(), 0, -0.1, 0)
-			drop.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
-			drop.BorderSizePixel = 0
-			drop.ZIndex = 3
-			game:GetService("TweenService"):Create(drop, TweenInfo.new(1.5, Enum.EasingStyle.Linear), {
-				Position = UDim2.new(drop.Position.X.Scale, 0, 1.2, 0)
-			}):Play()
-			game:GetService("Debris"):AddItem(drop, 2)
-			wait(0.05)
-		end
-	end)()
-end
-
-spawnRain()
-
--- Countdown Logic + Loadstring
-local seconds = 50
+-- Countdown logic
 coroutine.wrap(function()
+	local seconds = 60
 	while seconds > 0 do
-		counter.Text = seconds .. "s"
+		CountLabel.Text = seconds .. "s"
 		seconds -= 1
 		wait(1)
 	end
-	counter.Text = "Loading..."
 
-	-- ✅ Your script starts here:
-	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
-end)
+	CountLabel.Text = "Loading..."
+	LoadingLabel.Text = "Please wait..."
+
+	wait(3)
+
+	-- Your loadstring goes here:
+	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw"))()
