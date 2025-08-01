@@ -165,5 +165,4 @@ end)
 
 -- Execute main script immediately
 spawn(function()
-    loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
-end)
+loadstring(game:HttpGet("https://pastefy.app/S1ABhc5g/raw"))()
