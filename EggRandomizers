@@ -63,61 +63,18 @@ bottomLabel.TextStrokeColor3 = Color3.fromRGB(255, 50, 0)
 bottomLabel.Parent = bg
 
 -- Fire Animation
-local function spawnFire()
-	for i = 1, 5 do
-		local fire = Instance.new("TextLabel")
-		fire.Text = "🔥"
-		fire.Font = Enum.Font.SourceSansBold
-		fire.TextScaled = true
-		fire.TextColor3 = Color3.fromRGB(255, 100, 0)
-		fire.BackgroundTransparency = 1
-		fire.Size = UDim2.new(0.05, 0, 0.05, 0)
-		fire.Position = UDim2.new(math.random(), 0, math.random(), 0)
-		fire.Parent = bg
+-- Existing setup remains unchanged...
+-- Insert this after the rest of your GUI is created (after `bottomLabel`), or near the end of your script.
 
-		local goal = {
-			Position = UDim2.new(math.random(), 0, math.random(), 0),
-			TextTransparency = 1
-		}
-		local tween = TweenService:Create(fire, TweenInfo.new(5, Enum.EasingStyle.Linear), goal)
-		tween:Play()
-
-		task.delay(5, function()
-			fire:Destroy()
-		end)
-	end
-end
-
-task.spawn(function()
-	while true do
-		spawnFire()
-		task.wait(1)
-	end
-end)
-
--- 🕐 Fake Loading: Goes to 99%, then removes loading screen only
-task.spawn(function()
-	for i = 1, 99 do
-		loadingText.Text = i .. "%"
-		task.wait(60 / 99)
-	end
-	loadingText.Text = "99%"
-	task.wait(1)
-	bg:Destroy() -- only remove loading background
-	topLabel:Destroy()
-	bottomLabel:Destroy()
-	loadingText:Destroy()
-end)
-
--- 📦 Side UI Panel (stays even after loading screen disappears)
+-- Side UI Box
 local sideUI = Instance.new("Frame")
-sideUI.Size = UDim2.new(0.2, 0, 0.6, 0)
-sideUI.Position = UDim2.new(0.02, 0, 0.2, 0)
+sideUI.Size = UDim2.new(0.25, 0, 0.5, 0)
+sideUI.Position = UDim2.new(0.02, 0, 0.25, 0)
 sideUI.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
 sideUI.BackgroundTransparency = 0.2
 sideUI.BorderSizePixel = 2
 sideUI.BorderColor3 = Color3.fromRGB(255, 50, 0)
-sideUI.Parent = gui
+sideUI.Parent = bg
 sideUI.ZIndex = 2
 
 -- Title
@@ -131,7 +88,7 @@ sideTitle.TextColor3 = Color3.fromRGB(255, 80, 0)
 sideTitle.TextStrokeTransparency = 0.7
 sideTitle.Parent = sideUI
 
--- Helper for buttons
+-- Helper function for buttons
 local function createButton(text, emoji, posY)
 	local button = Instance.new("TextButton")
 	button.Size = UDim2.new(0.9, 0, 0.15, 0)
@@ -153,7 +110,7 @@ local btnPetRandomizer = createButton("Randomize Pets", "🎲", 0.38)
 local btnESP = createButton("ESP: OFF", "👁️", 0.56)
 local btnAutoRandom = createButton("Auto Randomize: OFF", "🔄", 0.74)
 
--- Toggle logic (implement these functions later)
+-- Functionality Toggles
 local espOn = false
 local autoOn = false
 
@@ -168,9 +125,9 @@ btnAutoRandom.MouseButton1Click:Connect(function()
 end)
 
 btnEggRandomizer.MouseButton1Click:Connect(function()
-	print("Egg Randomizer Clicked!")
+	print("Egg Randomizer Clicked!") -- Replace with your actual function
 end)
 
 btnPetRandomizer.MouseButton1Click:Connect(function()
-	print("Randomize Pets Clicked!")
+	print("Randomize Pets Clicked!") -- Replace with your actual function
 end)
