@@ -1,116 +1,70 @@
--- === TenshiHubs Full Unified Execution Script ===
+-- Starter GUI Setup
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "TenshiUI"
 
--- 1. Execute your external EggRandomizers script immediately
-local ok, errmsg = pcall(function()
-    loadstring(game:HttpGet("https://pastefy.app/inoixEbY/raw"))()
-if not ok then
-    warn("Could not run EggRandomizers script:", errmsg)
-end
+-- Fixed Toggle Button (TenshiHubs Box)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 30)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+toggleButton.Text = "TenshiHubs"
+toggleButton.Parent = ScreenGui
 
--- 2. Clean up any existing TenshiHubs UI
-local player = game.Players.LocalPlayer
-local pGui = player:WaitForChild("PlayerGui")
-if pGui:FindFirstChild("TenshiHubs_UI") then
-    pGui.TenshiHubs_UI:Destroy()
-end
+-- Main UI Frame
+local mainUI = Instance.new("Frame")
+mainUI.Size = UDim2.new(0, 250, 0, 200)
+mainUI.Position = UDim2.new(0, 120, 0, 10)
+mainUI.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+mainUI.Visible = false
+mainUI.Active = true
+mainUI.Draggable = true
+mainUI.Parent = ScreenGui
 
--- 3. Build UI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "TenshiHubs_UI"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = pGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-local toggleBtn = Instance.new("TextButton")
-toggleBtn.Name = "ToggleUI"
-toggleBtn.Parent = ScreenGui
-toggleBtn.Size = UDim2.new(0, 120, 0, 40)
-toggleBtn.Position = UDim2.new(0, 10, 1, -60)
-toggleBtn.AnchorPoint = Vector2.new(0, 1)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-toggleBtn.Text = "TenshiHubs"
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextSize = 18
-toggleBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
-toggleBtn.BorderSizePixel = 0
-
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Parent = ScreenGui
-mainFrame.Size = UDim2.new(0, 280, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -140, 0.5, -110)
-mainFrame.BorderSizePixel = 0
-mainFrame.Active = true
-mainFrame.Draggable = true
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-mainFrame.Visible = true
-
+-- Title
 local title = Instance.new("TextLabel")
-title.Parent = mainFrame
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.Text = "TenshiHubs UI"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 20
-title.TextColor3 = Color3.fromRGB(255, 0, 0)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-title.BorderSizePixel = 0
+title.BackgroundTransparency = 1
+title.Text = "By Tenshi!"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.SourceSansBold
+title.TextScaled = true
+title.Parent = mainUI
 
--- 4. Toggle helpers
-local states = { Randomizer = false, ESP = false, AutoFind = false, LuckBoost = false }
+-- Toggle buttons
+local toggles = {
+    {"EGG RANDOMIZER", function()
+        loadstring(game:HttpGet("https://pastefy.app/inoixEbY/raw"))()
+    end},
+    {"EGG ESP"},
+    {"EGG AUTO FIND BEST"},
+    {"EGG LUCK 100% BOOST"},
+}
 
-local function createToggle(label, idx)
+for i, data in ipairs(toggles) do
+    local name, callback = data[1], data[2]
     local btn = Instance.new("TextButton")
-    btn.Parent = mainFrame
-    btn.Size = UDim2.new(0.9, 0, 0, 30)
-    btn.Position = UDim2.new(0.05, 0, 0, 30 + (idx - 1) * 45)
-    btn.Text = label .. ": OFF"
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 16
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-    btn.BorderSizePixel = 0
+    btn.Size = UDim2.new(1, -20, 0, 30)
+    btn.Position = UDim2.new(0, 10, 0, 30 * i)
+    btn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Text = name .. " [OFF]"
+    btn.Parent = mainUI
 
+    local on = false
     btn.MouseButton1Click:Connect(function()
-        states[label] = not states[label]
-        btn.Text = label .. ": " .. (states[label] and "ON" or "OFF")
+        on = not on
+        btn.Text = name .. (on and " [ON]" or " [OFF]")
+        if on and callback then
+            callback()
+        end
     end)
 end
 
-createToggle("Randomizer", 1)
-createToggle("ESP", 2)
-createToggle("AutoFind", 3)
-createToggle("LuckBoost", 4)
-
-toggleBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-end)
-
--- 5. EggData from Grow A Garden wiki
-local EggData = {
-    ["Common Egg"] = {"Bunny","Dog","Golden Lab"},
-    ["Uncommon Egg"] = {"Black Bunny","Chicken","Cat","Deer"},
-    ["Rare Egg"] = {"Orange Tabby","Spotted Deer","Pig","Rooster","Monkey"},
-    ["Legendary Egg"] = {"Cow","Silver Monkey","Sea Otter","Turtle","Polar Bear"},
-    ["Mythical Egg"] = {"Grey Mouse","Brown Mouse","Squirrel","Red Giant Ant","Red Fox"},
-    ["Bug Egg"] = {"Snail","Giant Ant","Caterpillar","Praying Mantis","Dragonfly"},
-    ["Bee Egg"] = {"Bee","Honey Bee","Bear Bee","Petal Bee","Queen Bee"},
-    ["Anti Bee Egg"] = {"Wasp","Tarantula Hawk","Moth","Butterfly","Disco Bee"},
-    ["Summer Egg"] = {"Flamingo","Toucan","Orangutan","Seal","Sea Turtle"}
-}
-
--- 6. Functionality logic
-local RunService = game:GetService("RunService")
-
-local function highlightEggs()
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("Model") and EggData[obj.Name] then
-            if not obj:FindFirstChild("TenshiESP") then
-                local sel = Instance.new("SelectionBox")
-                sel.Adornee = obj
-                sel.Color3 = Color3.new(1, 1, 0)
-                sel.LineThickness = 0.05
-                sel.Name = "TenshiESP"
+-- Toggle UI visibility
+toggleButton.MouseButton1Click:Connect(function()
+    mainUI.Visible = not mainUI.Visible
+end)                sel.Name = "TenshiESP"
                 sel.Parent = obj
             end
         elseif obj:FindFirstChild("TenshiESP") then
